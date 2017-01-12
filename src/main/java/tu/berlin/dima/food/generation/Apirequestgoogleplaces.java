@@ -12,9 +12,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import tu.berlin.dima.food.classes.OpeningHours;
 import tu.berlin.dima.food.classes.Parameters;
+import tu.berlin.dima.food.classes.Restaurant;
+import tu.berlin.dima.food.utilities.Functions;
 
 public class Apirequestgoogleplaces {
 
@@ -23,11 +28,15 @@ public class Apirequestgoogleplaces {
     private URL connection;
     private Parameters parameters;
     private JsonObject restaurants_data;
+    private JsonObject restaurant_data;
+    private ArrayList<Restaurant> restaurants;
 
     final static Logger logger = LogManager.getLogger(Apirequestgoogleplaces.class);
     final static String type = "restaurant";
 
-    public Apirequestgoogleplaces(){}
+    public Apirequestgoogleplaces(){
+        restaurants = new ArrayList<Restaurant>();
+    }
 
     public Apirequestgoogleplaces(String provider, String urlprovider, String applicaton_key, URL connection, Parameters parameters) {
         this.urlprovider = urlprovider;
@@ -35,6 +44,8 @@ public class Apirequestgoogleplaces {
         this.connection = connection;
         this.parameters = parameters;
         restaurants_data = null;
+        restaurant_data= null;
+        restaurants = new ArrayList<Restaurant>();
     }
 
     public String getUrlprovider() {
@@ -79,7 +90,7 @@ public class Apirequestgoogleplaces {
 
     public void getJSONStreamData(){
         InputStream is;
-        System.out.println(this.getFormattedUrlApiRequestSearch());
+        //System.out.println(this.getFormattedUrlApiRequestSearch());
         try {
             this.connection = new URL(this.getFormattedUrlApiRequestSearch());
             is = connection.openStream();
@@ -89,6 +100,9 @@ public class Apirequestgoogleplaces {
             for (JsonObject result : results.getValuesAs(JsonObject.class) ){
                 System.out.println(result.getString("name"));
                 System.out.println(result.getJsonString("vicinity"));
+                System.out.println(Functions.getCleanStringfromJSONString(result.getJsonString("place_id")));
+                restaurants.add(this.getRestaurantData(
+                        Functions.getCleanStringfromJSONString(result.getJsonString("place_id"))));
                 System.out.println("-----------");
             }
         } catch (MalformedURLException e) {
@@ -97,11 +111,84 @@ public class Apirequestgoogleplaces {
             logger.error("Error at Apirequestgoogleplaces.getJSONStreamData: " + ex.toString());
         }
     }
-    //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=52.5153073,13.3267801&radius=1000&type=restaurant&keyword=pizza&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
+
+
+    public Restaurant getRestaurantData(String place_id){
+        InputStream inputStream;
+        Restaurant restaurant = new Restaurant();
+        //System.out.println(this.getFormattedUrlApiRequestRestaurant(place_id));
+        try {
+            URL connection = new URL(this.getFormattedUrlApiRequestRestaurant(place_id));
+            inputStream = connection.openStream();
+            JsonReader reader = Json.createReader(inputStream);
+            this.restaurant_data = reader.readObject();
+
+            JsonObject result = restaurant_data.getJsonObject("result");
+            restaurant.setRest_id(place_id);
+            restaurant.setName(Functions.getCleanStringfromJSONString(result.getJsonString("name")));
+            restaurant.setCuisine(null);
+            restaurant.setOpeningHours(this.getFormattedOpeningHours(
+                    result.getJsonObject("opening_hours").getJsonArray("periods")));
+            restaurant.setAvailable_seats(0);
+            restaurant.setAvg_price(0);
+            restaurant.setAvg_rating(Functions.getJsonNumberToDouble(
+                    (result.getJsonNumber("rating"))));
+            restaurant.setAvg_waiting_time(0);
+            restaurant.setOffers_seating_for_groups(false);
+            restaurant.setOffers_preoder(false);
+            restaurant.setPhonenumber(Functions.getCleanStringfromJSONString(
+                    result.getJsonString("formatted_phone_number")));
+            restaurant.setEmail("");
+            restaurant.setWebsite(Functions.getCleanStringfromJSONString(
+                    result.getJsonString("website")));
+            restaurant.setAddress(Functions.getCleanStringfromJSONString(
+                    result.getJsonString("formatted_address")));//
+            restaurant.setLat(Functions.getJsonNumberToDouble(result.getJsonObject("geometry").
+                    getJsonObject("location").getJsonNumber("lat")));
+            restaurant.setLon(Functions.getJsonNumberToDouble(result.getJsonObject("geometry").
+                    getJsonObject("location").getJsonNumber("lng")));
+
+                System.out.println("\t"+result.getJsonString("website"));
+                System.out.println("\t"+result.getJsonString("international_phone_number"));
+                System.out.println(restaurant.getOpeningHours().get(0).getDay() + " "+
+                        restaurant.getOpeningHours().get(0).getOpen() + " " +
+                        restaurant.getOpeningHours().get(0).getClose());
+
+        } catch (MalformedURLException e) {
+            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + e.toString());
+        }catch (IOException ex){
+            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + ex.toString());
+        }
+        return restaurant;
+    }
+    //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=&radius=&type=&keyword=&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
+
+    //https://maps.googleapis.com/maps/api/place/details/json?placeid=&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
+
+    //https://maps.googleapis.com/maps/api/place/textsearch/json?query=&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
+
+    public String getFormattedUrlApiRequestRestaurant(String place_id){
+        return this.urlprovider+"details/json?placeid="+place_id+"&key="+this.applicaton_key;
+    }
 
     public String getFormattedUrlApiRequestSearch(){
-        return this.urlprovider+"/json?"+this.getParameters().getFormattedParamsGoogle()+
+        return this.urlprovider+"nearbysearch/json?"+this.getParameters().getFormattedParamsGoogle()+
                 "&type="+type+"&key="+this.applicaton_key;
+    }
+
+    public ArrayList<OpeningHours> getFormattedOpeningHours(JsonArray openingHoursArray){
+        ArrayList<OpeningHours> arrayOpeningHours = new ArrayList<OpeningHours>();
+        OpeningHours openingHours = null;
+
+            for (JsonObject result : openingHoursArray.getValuesAs(JsonObject.class) ){
+                openingHours = new OpeningHours();
+                openingHours.setDay(result.getJsonObject("close").getInt("day"));
+                openingHours.setClose(Functions.getFormattedMilitarTimeToDateTime(result.getJsonObject("close").getString("time")));
+                openingHours.setOpen(Functions.getFormattedMilitarTimeToDateTime(result.getJsonObject("open").getString("time")));
+                arrayOpeningHours.add(openingHours);
+            }
+
+        return arrayOpeningHours;
     }
 
 }

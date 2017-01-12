@@ -19,6 +19,7 @@ import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import tu.berlin.dima.food.classes.Parameters;
+import tu.berlin.dima.food.classes.Restaurant;
 
 public class Apirequestfoursquare {
 
@@ -112,6 +113,35 @@ public class Apirequestfoursquare {
         }
     }
 
+    //https://api.foursquare.com/v2/venues/53ab0bdd498ef2b98039f0d0?
+    // client_id=HBDPIB5LCAKZ1BY1SEL5Z4OXLSSLLHJUVBZD2MTKTJ0GO4AO&
+    // client_secret=5VXHH0FQR2GYBUORGRQ5TA51A1GPZSKM4MUGW33CVHB0GGHB&v=20170109
+
+    public Restaurant getJSONRestaurantDetailData(String nombre,String id_venue){
+        InputStream is;
+        Restaurant restaurant = new Restaurant();
+        System.out.println(this.getFormattedUrlApiRequestRestaurant(id_venue));
+        try {
+            this.connection = new URL(this.getFormattedUrlApiRequestRestaurant(id_venue));
+            is = connection.openStream();
+            JsonReader reader = Json.createReader(is);
+            this.restaurants_data = reader.readObject();
+            JsonArray results = restaurants_data.getJsonObject("response").getJsonArray("venues");
+            for (JsonObject result : results.getValuesAs(JsonObject.class) ){
+                System.out.println(result.getString("name"));
+                System.out.println(result.getJsonObject("location").getJsonString("address"));
+                System.out.println("-----------");
+            }
+        } catch (MalformedURLException e) {
+            logger.error("Error at Apirequestfoursquare.getJSONStreamData: " + e.toString());
+        }catch (IOException ex){
+            logger.error("Error at Apirequestfoursquare.getJSONStreamData: " + ex.toString());
+        }
+        return restaurant;
+    }
+
+
+
     //https://api.foursquare.com/v2/venues/search?ll=52.5149719,13.3264126&radius=1000&categoryId=4d4b7105d754a06374d81259&query=donuts&v=20170109
 
     public String getFormattedUserApiKey(){
@@ -124,5 +154,12 @@ public class Apirequestfoursquare {
         String strDate = sdfDate.format(now);
         return this.urlprovider+"search?"+this.getParameters().toString()+
                 "&categoryId="+categoryId+"&"+this.getFormattedUserApiKey()+"&v="+strDate;
+    }
+
+    public String getFormattedUrlApiRequestRestaurant(String id_venue){
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
+        Date now = new Date();
+        String strDate = sdfDate.format(now);
+        return this.urlprovider+id_venue+"/"+this.getFormattedUserApiKey()+"&v="+strDate;
     }
 }

@@ -24,7 +24,7 @@ public class TestApirequest {
         params.setRadius(3000);
 
 
-        apirequestgoogleplaces.setUrlprovider("https://maps.googleapis.com/maps/api/place/nearbysearch");
+        apirequestgoogleplaces.setUrlprovider("https://maps.googleapis.com/maps/api/place/");
         apirequestgoogleplaces.setParameters(params);
         apirequestgoogleplaces.setApplicaton_key("AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0");
         apirequestgoogleplaces.getJSONStreamData();

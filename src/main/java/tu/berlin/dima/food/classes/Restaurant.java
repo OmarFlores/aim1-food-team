@@ -23,11 +23,10 @@ import java.util.Date;
 
 public class Restaurant {
 
-    private int rest_id;
+    private String rest_id;
     private String name;
     private ArrayList<String> cuisine;
-    private Date opentime;
-    private Date closetime;
+    private ArrayList<OpeningHours> openingHours;
     private int available_seats;
     private double avg_price;
     private double avg_rating;
@@ -41,11 +40,11 @@ public class Restaurant {
     private double lon;
     private String address;
 
-    public int getRest_id() {
+    public String getRest_id() {
         return rest_id;
     }
 
-    public void setRest_id(int rest_id) {
+    public void setRest_id(String rest_id) {
         this.rest_id = rest_id;
     }
 
@@ -65,20 +64,12 @@ public class Restaurant {
         this.cuisine = cuisine;
     }
 
-    public Date getOpentime() {
-        return opentime;
+    public ArrayList<OpeningHours> getOpeningHours() {
+        return openingHours;
     }
 
-    public void setOpentime(Date opentime) {
-        this.opentime = opentime;
-    }
-
-    public Date getClosetime() {
-        return closetime;
-    }
-
-    public void setClosetime(Date closetime) {
-        this.closetime = closetime;
+    public void setOpeningHours(ArrayList<OpeningHours> openingHours) {
+        this.openingHours = openingHours;
     }
 
     public int getAvailable_seats() {
