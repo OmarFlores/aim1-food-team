@@ -40,6 +40,11 @@ public class Restaurant {
     private double lon;
     private String address;
 
+    public Restaurant(){
+        this.cuisine = new ArrayList<String>();
+        this.openingHours = new ArrayList<OpeningHours>();
+    }
+
     public String getRest_id() {
         return rest_id;
     }

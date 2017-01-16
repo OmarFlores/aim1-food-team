@@ -34,4 +34,11 @@ public class OpeningHours {
     public void setClose(String close) {
         this.close = close;
     }
+
+    @Override
+    public String toString() {
+        return "Day " + day
+                +" Open " + open
+                +" Close "+ close;
+    }
 }

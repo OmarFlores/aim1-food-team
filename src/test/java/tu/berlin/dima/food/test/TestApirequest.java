@@ -18,7 +18,7 @@ public class TestApirequest {
         Apirequestfoursquare apirequestfoursquare = new Apirequestfoursquare();
         Parameters params = new Parameters();
 
-        params.setCuisine("burger");
+        params.setCuisine("pizza");
         params.setLat(52.5149719);
         params.setLon(13.3264126);
         params.setRadius(3000);
@@ -28,6 +28,7 @@ public class TestApirequest {
         apirequestgoogleplaces.setParameters(params);
         apirequestgoogleplaces.setApplicaton_key("AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0");
         apirequestgoogleplaces.getJSONStreamData();
+
         /*
         apirequestfoursquare.setUrlprovider("https://api.foursquare.com/v2/venues/");
         apirequestfoursquare.setParameters(params);
