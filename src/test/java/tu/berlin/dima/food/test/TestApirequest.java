@@ -7,37 +7,65 @@ package tu.berlin.dima.food.test;
 import tu.berlin.dima.food.classes.Parameters;
 import tu.berlin.dima.food.generation.Apirequestfoursquare;
 import tu.berlin.dima.food.generation.Apirequestgoogleplaces;
-//https://api.foursquare.com/v2/venues/search?ll=52.5149719,13.3264126&radius=1000&categoryId=4d4b7105d754a06374d81259&query=donuts&client_id=HBDPIB5LCAKZ1BY1SEL5Z4OXLSSLLHJUVBZD2MTKTJ0GO4AO&client_secret=5VXHH0FQR2GYBUORGRQ5TA51A1GPZSKM4MUGW33CVHB0GGHB&v=20170109
 
-//https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=52.5153073,13.3267801&radius=1000&type=restaurant&keyword=pizza&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
+import tu.berlin.dima.food.request.Requestapi;
 
 public class TestApirequest {
     public static void main(String[] args) {
+
+        Requestapi.getArrayListRestaurants("pizza",52.5149719,13.3264126,1000);
+
+        /*
         Apirequestgoogleplaces apirequestgoogleplaces = new Apirequestgoogleplaces();
         Apirequestfoursquare apirequestfoursquare = new Apirequestfoursquare();
         Parameters params = new Parameters();
 
+
+        Properties prop = new Properties();
+        InputStream input = null;
+
         params.setCuisine("pizza");
         params.setLat(52.5149719);
         params.setLon(13.3264126);
-        params.setRadius(3000);
-
+        params.setRadius(1000);
 
         apirequestgoogleplaces.setUrlprovider("https://maps.googleapis.com/maps/api/place/");
         apirequestgoogleplaces.setParameters(params);
         apirequestgoogleplaces.setApplicaton_key("AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0");
         apirequestgoogleplaces.getJSONStreamData();
 
-        /*
-        apirequestfoursquare.setUrlprovider("https://api.foursquare.com/v2/venues/");
-        apirequestfoursquare.setParameters(params);
-        apirequestfoursquare.setPublic_client_key("HBDPIB5LCAKZ1BY1SEL5Z4OXLSSLLHJUVBZD2MTKTJ0GO4AO");
-        apirequestfoursquare.setPrivate_client_key("5VXHH0FQR2GYBUORGRQ5TA51A1GPZSKM4MUGW33CVHB0GGHB");
-        apirequestfoursquare.getJSONStreamData();
-        */
+        try {
 
+            String filename = "config.properties";
+            input = TestApirequest.class.getClassLoader().getResourceAsStream(filename);
+            if(input==null){
+                System.out.println("Sorry, unable to find " + filename);
+                return;
+            }
 
+            //load a properties file from class path, inside static method
+            prop.load(input);
+
+            //get the property value and print it out
+            System.out.println(prop.getProperty("googleplacesclientid"));
+            System.out.println(prop.getProperty("foursquareclientid"));
+            System.out.println(prop.getProperty("foursaquareclientsecretid"));
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally{
+            if(input!=null){
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }*/
 
     }
 }

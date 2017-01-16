@@ -21,8 +21,7 @@ import java.util.Date;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import tu.berlin.dima.food.classes.Parameters;
-import tu.berlin.dima.food.classes.Restaurant;
-import tu.berlin.dima.food.utilities.Functions;
+
 
 public class Apirequestfoursquare {
 
@@ -95,40 +94,11 @@ public class Apirequestfoursquare {
         this.private_client_key = private_client_key;
     }
 
-    public void getJSONStreamData(){
-        InputStream is;
-        System.out.println(this.getFormattedUrlApiRequestSearch());
-        try {
-            this.connection = new URL(this.getFormattedUrlApiRequestSearch());
-            is = connection.openStream();
-            JsonReader reader = Json.createReader(is);
-            this.restaurants_data = reader.readObject();
-            JsonArray results = restaurants_data.getJsonObject("response").getJsonArray("venues");
-            for (JsonObject result : results.getValuesAs(JsonObject.class) ){
-                System.out.println(result.getString("name"));
-                System.out.println(result.getJsonObject("location").getJsonString("address"));
-                System.out.println("-----------");
-            }
-        } catch (MalformedURLException e) {
-            logger.error("Error at Apirequestfoursquare.getJSONStreamData: " + e.toString());
-        }catch (IOException ex){
-            logger.error("Error at Apirequestfoursquare.getJSONStreamData: " + ex.toString());
-        }
-    }
-
-    //https://api.foursquare.com/v2/venues/search?
-    // intent=match&
-    // ll=52.5169226,13.3090521&
-    // query=Trattoria%20Rathaus%20Piazza&
-    // categoryId=4d4b7105d754a06374d81259&
-    // client_id=HBDPIB5LCAKZ1BY1SEL5Z4OXLSSLLHJUVBZD2MTKTJ0GO4AO&
-    // client_secret=5VXHH0FQR2GYBUORGRQ5TA51A1GPZSKM4MUGW33CVHB0GGHB&
-    // v=20170115
 
     public int getJSONStreamDataForByLocationAndName(String name,String lat, String lon){
         InputStream is;
         int priceRating = 0;
-        //System.out.println(this.getFormattedUrlSearchByNameAndLocation(name,lat,lon));
+
         try {
             this.connection = new URL(this.getFormattedUrlSearchByNameAndLocation(name,lat,lon));
             is = connection.openStream();
@@ -137,7 +107,6 @@ public class Apirequestfoursquare {
             JsonArray results = restaurants_data.getJsonObject("response").getJsonArray("venues");
 
             for (JsonObject result : results.getValuesAs(JsonObject.class) ){
-                //System.out.println(result.getJsonString("id").toString().replace("\"",""));
                 priceRating = this.getJSONRestaurantPrice(name,
                         (result.getJsonString("id").toString().replace("\"","")));
             }
@@ -151,44 +120,17 @@ public class Apirequestfoursquare {
         return priceRating;
     }
 
-    //https://api.foursquare.com/v2/venues/53ab0bdd498ef2b98039f0d0?
-    // client_id=HBDPIB5LCAKZ1BY1SEL5Z4OXLSSLLHJUVBZD2MTKTJ0GO4AO&
-    // client_secret=5VXHH0FQR2GYBUORGRQ5TA51A1GPZSKM4MUGW33CVHB0GGHB&v=20170109
-
-    public Restaurant getJSONRestaurantDetailData(String nombre,String id_venue){
-        InputStream is;
-        Restaurant restaurant = new Restaurant();
-        System.out.println(this.getFormattedUrlApiRequestRestaurant(id_venue));
-        try {
-            this.connection = new URL(this.getFormattedUrlApiRequestRestaurant(id_venue));
-            is = connection.openStream();
-            JsonReader reader = Json.createReader(is);
-            this.restaurants_data = reader.readObject();
-            JsonArray results = restaurants_data.getJsonObject("response").getJsonArray("venues");
-            for (JsonObject result : results.getValuesAs(JsonObject.class) ){
-                System.out.println(result.getString("name"));
-                System.out.println(result.getJsonObject("location").getJsonString("address"));
-                System.out.println("-----------");
-            }
-        } catch (MalformedURLException e) {
-            logger.error("Error at Apirequestfoursquare.getJSONStreamData: " + e.toString());
-        }catch (IOException ex){
-            logger.error("Error at Apirequestfoursquare.getJSONStreamData: " + ex.toString());
-        }
-        return restaurant;
-    }
 
     public int getJSONRestaurantPrice(String nombre,String id_venue){
         InputStream is;
         int priceRate = 0;
-        //System.out.println(this.getFormattedUrlApiRequestRestaurant(id_venue));
         try {
+            System.out.println(this.getFormattedUrlApiRequestRestaurant(id_venue));
             this.connection = new URL(this.getFormattedUrlApiRequestRestaurant(id_venue));
             is = connection.openStream();
             JsonReader reader = Json.createReader(is);
             this.restaurants_data = reader.readObject();
             JsonObject result = restaurants_data.getJsonObject("response").getJsonObject("venue");
-                //System.out.println("Price Rating "+result.getJsonObject("price").getInt("tier"));
                 priceRate = result.getJsonObject("price").getInt("tier");
 
         } catch (MalformedURLException e) {
@@ -205,14 +147,6 @@ public class Apirequestfoursquare {
 
     public String getFormattedUserApiKey(){
         return "client_id="+this.getPublic_client_key()+"&client_secret="+this.getPrivate_client_key();
-    }
-
-    public String getFormattedUrlApiRequestSearch(){
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMdd");
-        Date now = new Date();
-        String strDate = sdfDate.format(now);
-        return this.urlprovider+"search?"+this.getParameters().toString()+
-                "&categoryId="+categoryId+"&"+this.getFormattedUserApiKey()+"&v="+strDate;
     }
 
     public String getFormattedUrlSearchByNameAndLocation(String name, String lat,String lon) throws UnsupportedEncodingException {

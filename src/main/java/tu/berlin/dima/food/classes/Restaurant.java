@@ -5,37 +5,17 @@ package tu.berlin.dima.food.classes;
  */
 
 import java.util.ArrayList;
-import java.util.Date;
-
-/**
-    "restaurant":"alphanumeric",
-"cuisine":"alphanumeric",
-"lat":"numeric",
-"lon":"numeric",
-"address":"alphanumeric",
-"openinghours":"alphanumeric",
-"pricerange":"numeric",
-"phonenumber":"numeric",
-"email":"alphanumeric",
-"website":"alphanumeric"
-
-    * */
 
 public class Restaurant {
 
     private String rest_id;
     private String name;
-    private ArrayList<String> cuisine;
     private ArrayList<OpeningHours> openingHours;
-    private int available_seats;
-    private double avg_price;
-    private double avg_rating;
-    private double avg_waiting_time;
-    private boolean offers_seating_for_groups;
-    private boolean offers_preoder;
-    private String phonenumber;
-    private String email;
-    private String website;
+    private ArrayList<String> cuisine;
+    private double price;
+    private double rating;
+    private String phone;
+    private String webpage;
     private double lat;
     private double lon;
     private String address;
@@ -43,6 +23,38 @@ public class Restaurant {
     public Restaurant(){
         this.cuisine = new ArrayList<String>();
         this.openingHours = new ArrayList<OpeningHours>();
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getWebpage() {
+        return webpage;
+    }
+
+    public void setWebpage(String webpage) {
+        this.webpage = webpage;
     }
 
     public String getRest_id() {
@@ -75,78 +87,6 @@ public class Restaurant {
 
     public void setOpeningHours(ArrayList<OpeningHours> openingHours) {
         this.openingHours = openingHours;
-    }
-
-    public int getAvailable_seats() {
-        return available_seats;
-    }
-
-    public void setAvailable_seats(int available_seats) {
-        this.available_seats = available_seats;
-    }
-
-    public double getAvg_price() {
-        return avg_price;
-    }
-
-    public void setAvg_price(double avg_price) {
-        this.avg_price = avg_price;
-    }
-
-    public double getAvg_rating() {
-        return avg_rating;
-    }
-
-    public void setAvg_rating(double avg_rating) {
-        this.avg_rating = avg_rating;
-    }
-
-    public double getAvg_waiting_time() {
-        return avg_waiting_time;
-    }
-
-    public void setAvg_waiting_time(double avg_waiting_time) {
-        this.avg_waiting_time = avg_waiting_time;
-    }
-
-    public boolean isOffers_seating_for_groups() {
-        return offers_seating_for_groups;
-    }
-
-    public void setOffers_seating_for_groups(boolean offers_seating_for_groups) {
-        this.offers_seating_for_groups = offers_seating_for_groups;
-    }
-
-    public boolean isOffers_preoder() {
-        return offers_preoder;
-    }
-
-    public void setOffers_preoder(boolean offers_preoder) {
-        this.offers_preoder = offers_preoder;
-    }
-
-    public String getPhonenumber() {
-        return phonenumber;
-    }
-
-    public void setPhonenumber(String phonenumber) {
-        this.phonenumber = phonenumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
     }
 
     public double getLat() {

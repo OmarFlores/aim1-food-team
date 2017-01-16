@@ -45,6 +45,14 @@ public class Apirequestgoogleplaces {
         restaurants = new ArrayList<Restaurant>();
     }
 
+    public ArrayList<Restaurant> getRestaurants() {
+        return restaurants;
+    }
+
+    public void setRestaurants(ArrayList<Restaurant> restaurants) {
+        this.restaurants = restaurants;
+    }
+
     public String getUrlprovider() {
         return urlprovider;
     }
@@ -88,7 +96,6 @@ public class Apirequestgoogleplaces {
     public void getJSONStreamData(){
         InputStream is;
         String pageToken="";
-        System.out.println(this.getFormattedUrlApiRequestSearch());
 
         try {
             do{
@@ -106,14 +113,25 @@ public class Apirequestgoogleplaces {
 
                 JsonArray results = restaurants_data.getJsonArray("results");
                 for (JsonObject result : results.getValuesAs(JsonObject.class) ){
-                    System.out.println(result.getString("name"));
-                    System.out.println(result.getJsonString("vicinity"));
-                    System.out.println(Functions.getCleanStringfromJSONString(result.getJsonString("place_id")));
-                    restaurants.add(this.getRestaurantData(
-                            Functions.getCleanStringfromJSONString(result.getJsonString("place_id"))));
+
+                    Restaurant restaurantObject = this.getRestaurantData(
+                            Functions.getCleanStringfromJSONString(result.getJsonString("place_id")));
+                    restaurants.add(restaurantObject);
+
+                    System.out.println("Restaurant " + restaurantObject.getName());
+                    System.out.println("Address " + restaurantObject.getAddress());
+                    System.out.println("Lat " + restaurantObject.getLat());
+                    System.out.println("Lon " + restaurantObject.getLon());
+                    System.out.println("\t WebPage"+restaurantObject.getWebpage());
+                    System.out.println("\t Phone "+restaurantObject.getPhone());
+                    System.out.println("\t Price Rate "+restaurantObject.getPrice());
+                    System.out.println("\t Rate "+restaurantObject.getRating());
+
+                    if (restaurantObject.getOpeningHours().size() > 0)
+                        System.out.println(restaurantObject.getOpeningHours().toString());
+
                     System.out.println("-----------");
                 }
-                System.out.println("NextPage-----------" + this.restaurants_data.getJsonString("next_page_token"));
             }while (this.restaurants_data.containsKey("next_page_token"));
 
         } catch (MalformedURLException e) {
@@ -127,7 +145,6 @@ public class Apirequestgoogleplaces {
     public Restaurant getRestaurantData(String place_id){
         InputStream inputStream;
         Restaurant restaurant = new Restaurant();
-        System.out.println(this.getFormattedUrlApiRequestRestaurant(place_id));
 
         Apirequestfoursquare apirequestfoursquare = new Apirequestfoursquare();
         apirequestfoursquare.setUrlprovider("https://api.foursquare.com/v2/venues/");
@@ -137,6 +154,7 @@ public class Apirequestgoogleplaces {
         try {
             URL connection = new URL(this.getFormattedUrlApiRequestRestaurant(place_id));
             inputStream = connection.openStream();
+
             JsonReader reader = Json.createReader(inputStream);
             this.restaurant_data = reader.readObject();
 
@@ -149,32 +167,23 @@ public class Apirequestgoogleplaces {
                 restaurant.setOpeningHours(this.getFormattedOpeningHours(
                         result.getJsonObject("opening_hours")));
 
-
-            restaurant.setAvailable_seats(0);
-
             if (result.containsKey("rating"))
-                restaurant.setAvg_rating(Functions.getJsonNumberToDouble(
+                restaurant.setRating(Functions.getJsonNumberToDouble(
                         (result.getJsonNumber("rating"))));
             else
-                restaurant.setAvg_rating(0);
+                restaurant.setRating(0);
 
-            restaurant.setAvg_waiting_time(0);
-            restaurant.setOffers_seating_for_groups(false);
-            restaurant.setOffers_preoder(false);
-
-            if (result.containsKey("formatted_phone_number"))
-                restaurant.setPhonenumber(Functions.getCleanStringfromJSONString(
-                        result.getJsonString("formatted_phone_number")));
+            if (result.containsKey("international_phone_number"))
+                restaurant.setPhone(Functions.getCleanStringfromJSONString(
+                        result.getJsonString("international_phone_number")));
             else
-                restaurant.setPhonenumber(null);
-
-            restaurant.setEmail(null);
+                restaurant.setPhone(null);
 
             if (result.containsKey("website"))
-                restaurant.setWebsite(Functions.getCleanStringfromJSONString(
+                restaurant.setWebpage(Functions.getCleanStringfromJSONString(
                         result.getJsonString("website")));
             else
-                restaurant.setWebsite(null);
+                restaurant.setWebpage(null);
 
             if (result.containsKey("formatted_address"))
                 restaurant.setAddress(Functions.getCleanStringfromJSONString(
@@ -186,32 +195,18 @@ public class Apirequestgoogleplaces {
                     getJsonObject("location").getJsonNumber("lat")));
             restaurant.setLon(Functions.getJsonNumberToDouble(result.getJsonObject("geometry").
                     getJsonObject("location").getJsonNumber("lng")));
-
-                System.out.println("\t"+result.getJsonString("website"));
-                System.out.println("\t"+result.getJsonString("international_phone_number"));
-
-            restaurant.setAvg_price(apirequestfoursquare.getJSONStreamDataForByLocationAndName(restaurant.getName(),
+            restaurant.setPrice(apirequestfoursquare.getJSONStreamDataForByLocationAndName(restaurant.getName(),
                     String.valueOf(restaurant.getLat()),String.valueOf(restaurant.getLon())));
 
-            System.out.println("\t Price Rate"+restaurant.getAvg_price());
-
-            if (restaurant.getOpeningHours().size() > 0)
-                System.out.println(restaurant.getOpeningHours().toString());
-
         } catch (MalformedURLException e) {
-            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + e.toString());
+            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + e.getMessage());
         }catch (IOException ex){
-            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + ex.toString());
+            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + ex.getMessage());
         }catch (NullPointerException npex){
-            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + npex.toString());
+            logger.error("Error at Apirequestgoogleplaces.getRestaurantData: " + npex.getMessage());
         }
         return restaurant;
     }
-    //https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=&radius=&type=&keyword=&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
-
-    //https://maps.googleapis.com/maps/api/place/details/json?placeid=&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
-
-    //https://maps.googleapis.com/maps/api/place/textsearch/json?query=&key=AIzaSyAlQVj6HynxNo0JcEg0_3clzXMwReRGsL0
 
     public String getFormattedUrlApiRequestRestaurant(String place_id){
         return this.urlprovider+"details/json?placeid="+place_id+"&key="+this.applicaton_key;
@@ -226,25 +221,6 @@ public class Apirequestgoogleplaces {
         return this.urlprovider+"nearbysearch/json?"+this.getParameters().getFormattedParamsGoogle()+
                 "&type="+type+"&key="+this.applicaton_key+"&pagetoken="+pageToken;
     }
-
-    /*public ArrayList<OpeningHours> getFormattedOpeningHours(JsonArray openingHoursArray){
-        ArrayList<OpeningHours> arrayOpeningHours = new ArrayList<OpeningHours>();
-        OpeningHours openingHours = null;
-
-        try{
-            for (JsonObject result : openingHoursArray.getValuesAs(JsonObject.class) ){
-                openingHours = new OpeningHours();
-                openingHours.setDay(result.getJsonObject("close").getInt("day"));
-                openingHours.setClose(Functions.getFormattedMilitarTimeToDateTime(result.getJsonObject("close").getString("time")));
-                openingHours.setOpen(Functions.getFormattedMilitarTimeToDateTime(result.getJsonObject("open").getString("time")));
-                arrayOpeningHours.add(openingHours);
-            }
-        }catch (Exception ex){
-            logger.error("Error at Apirequestgoogleplaces.getFormattedOpeningHours: " + ex.getMessage());
-            return arrayOpeningHours;
-        }
-        return arrayOpeningHours;
-    }*/
 
     public ArrayList<OpeningHours> getFormattedOpeningHours(JsonObject openingHoursObject){
         ArrayList<OpeningHours> arrayOpeningHours = new ArrayList<OpeningHours>();
