@@ -36,7 +36,7 @@ public class Requestapi {
             params.setLat(lat);
             params.setLon(lon);
             if (radius > 0)
-                params.setRadius(10000);
+                params.setRadius(radius);
             else
                 params.setRadius(default_radius);
 

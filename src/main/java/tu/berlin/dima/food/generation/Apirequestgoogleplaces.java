@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import tu.berlin.dima.food.classes.OpeningHours;
 import tu.berlin.dima.food.classes.Parameters;
 import tu.berlin.dima.food.classes.Restaurant;
+import tu.berlin.dima.food.request.Requestapi;
 import tu.berlin.dima.food.utilities.Functions;
 
 public class Apirequestgoogleplaces {
@@ -147,9 +148,9 @@ public class Apirequestgoogleplaces {
         Restaurant restaurant = new Restaurant();
 
         Apirequestfoursquare apirequestfoursquare = new Apirequestfoursquare();
-        apirequestfoursquare.setUrlprovider("https://api.foursquare.com/v2/venues/");
-        apirequestfoursquare.setPublic_client_key("HBDPIB5LCAKZ1BY1SEL5Z4OXLSSLLHJUVBZD2MTKTJ0GO4AO");
-        apirequestfoursquare.setPrivate_client_key("5VXHH0FQR2GYBUORGRQ5TA51A1GPZSKM4MUGW33CVHB0GGHB");
+        apirequestfoursquare.setUrlprovider(Requestapi.foursquare_url_api);
+        apirequestfoursquare.setPublic_client_key(Requestapi.foursquare_client_id);
+        apirequestfoursquare.setPrivate_client_key(Requestapi.foursquare_client_secret_id);
 
         try {
             URL connection = new URL(this.getFormattedUrlApiRequestRestaurant(place_id));
@@ -195,6 +196,7 @@ public class Apirequestgoogleplaces {
                     getJsonObject("location").getJsonNumber("lat")));
             restaurant.setLon(Functions.getJsonNumberToDouble(result.getJsonObject("geometry").
                     getJsonObject("location").getJsonNumber("lng")));
+
             restaurant.setPrice(apirequestfoursquare.getJSONStreamDataForByLocationAndName(restaurant.getName(),
                     String.valueOf(restaurant.getLat()),String.valueOf(restaurant.getLon())));
 

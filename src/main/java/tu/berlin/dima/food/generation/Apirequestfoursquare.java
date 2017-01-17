@@ -125,7 +125,6 @@ public class Apirequestfoursquare {
         InputStream is;
         int priceRate = 0;
         try {
-            System.out.println(this.getFormattedUrlApiRequestRestaurant(id_venue));
             this.connection = new URL(this.getFormattedUrlApiRequestRestaurant(id_venue));
             is = connection.openStream();
             JsonReader reader = Json.createReader(is);

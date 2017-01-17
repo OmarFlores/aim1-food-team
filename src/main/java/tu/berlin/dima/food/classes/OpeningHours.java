@@ -5,6 +5,7 @@ import java.util.Date;
 /**
  * Created by Jaguar on 1/12/17.
  */
+
 public class OpeningHours {
     private int day;
     private String open;
