@@ -17,7 +17,7 @@ import tu.berlin.dima.food.request.Requestapi;
 public class TestApirequest {
     public static void main(String[] args) {
 
-        Requestapi.getArrayListRestaurants("",52.4930605,13.4173319,1000);
+        Requestapi.getArrayListRestaurants("Falafel Restaurant",52.4930605,13.4173319,1000);
 
         /*
         Apirequestgoogleplaces apirequestgoogleplaces = new Apirequestgoogleplaces();

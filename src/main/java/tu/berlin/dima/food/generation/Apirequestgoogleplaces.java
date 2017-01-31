@@ -36,7 +36,14 @@ public class Apirequestgoogleplaces {
         restaurants = new ArrayList<Restaurant>();
     }
 
-    public Apirequestgoogleplaces(String provider, String urlprovider, String applicaton_key, URL connection, Parameters parameters) {
+    /**
+     * Constructor to initialize parameters to connect to googleplaces API
+     * @param urlprovider url for googleplaces API
+     * @param applicaton_key key for querying the googleplaces API
+     * @param connection the connection object to connect to the googleplaces API
+     * @param parameters the objects containing all the parameters for query googleplaces API
+     */
+    public Apirequestgoogleplaces(String urlprovider, String applicaton_key, URL connection, Parameters parameters) {
         this.urlprovider = urlprovider;
         this.applicaton_key = applicaton_key;
         this.connection = connection;
@@ -90,10 +97,18 @@ public class Apirequestgoogleplaces {
         return restaurants_data;
     }
 
+    /**
+     * Sets the restaurant data in the JSON object
+     * @param restaurants_data
+     */
     public void setRestaurants_data(JsonObject restaurants_data) {
         this.restaurants_data = restaurants_data;
     }
 
+    /**
+     * Returns a Restaurant object with all the information about the restaurant(Restaurant name, Address, Location, Website,
+     * contact, price rate and rate).
+     */
     public void getJSONStreamData(){
         InputStream is;
         String pageToken="";
@@ -143,6 +158,11 @@ public class Apirequestgoogleplaces {
     }
 
 
+    /**
+     * Requests to get the restaurant Data according to place id.
+     * @param place_id
+     * @return Restaurant Data
+     */
     public Restaurant getRestaurantData(String place_id){
         InputStream inputStream;
         Restaurant restaurant = new Restaurant();
@@ -210,20 +230,39 @@ public class Apirequestgoogleplaces {
         return restaurant;
     }
 
+    /**
+     * requests the formatted URL of the query to request the API with a Place Id as parameter.
+     * @param place_id
+     * @return URL of the API query.
+     */
     public String getFormattedUrlApiRequestRestaurant(String place_id){
         return this.urlprovider+"details/json?placeid="+place_id+"&key="+this.applicaton_key;
     }
 
+    /**
+     * requests the formatted URL of the query to request the API.
+     * @return URL of the API query.
+     */
     public String getFormattedUrlApiRequestSearch(){
         return this.urlprovider+"nearbysearch/json?"+this.getParameters().getFormattedParamsGoogle()+
                 "&type="+type+"&key="+this.applicaton_key;
     }
 
+    /**
+     * requests the formatted URL of the query to request the API with a Page Token as parameter.
+     * @param pageToken
+     * @return URL of the API query.
+     */
     public String getFormattedUrlApiRequestSearchByPageToken(String pageToken){
         return this.urlprovider+"nearbysearch/json?"+this.getParameters().getFormattedParamsGoogle()+
                 "&type="+type+"&key="+this.applicaton_key+"&pagetoken="+pageToken;
     }
 
+    /**
+     * requests the opening hours of the restaurant with the opening hours JSON object.
+     * @param openingHoursObject
+     * @return opening hours of the restaurant in form of an array.
+     */
     public ArrayList<OpeningHours> getFormattedOpeningHours(JsonObject openingHoursObject){
         ArrayList<OpeningHours> arrayOpeningHours = new ArrayList<OpeningHours>();
         OpeningHours openingHours = null;
